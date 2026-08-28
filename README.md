@@ -1,123 +1,123 @@
-# Luminar Smart Demo
+# Luminar Smart
 
-Protótipo comercial enxuto do **Luminar Smart**, um assistente inteligente para a Luminar Gold Corretora de Seguros.
+An AI-powered lead qualification experience for an insurance brokerage. Luminar Smart turns open-ended conversations into structured commercial context and prepares a consent-based handoff to a human specialist.
 
-O objetivo deste repositório **não é construir o novo site completo da Luminar**, nem um produto de produção. O objetivo é criar uma demonstração funcional, visualmente convincente e simples o bastante para apresentar ao sócio-administrador da empresa e validar interesse comercial antes de investir em uma arquitetura maior.
+This repository is a presentation-ready proof of concept that demonstrates how generative AI can support insurance sales without replacing professional advice.
 
-## Objetivo da demo
+## Product overview
 
-A demo deve permitir que uma pessoa converse com um assistente de IA da Luminar e perceba, em poucos minutos, como a solução pode:
+Visitors describe what they need in their own words. The assistant identifies their profile and insurance intent, asks one relevant follow-up question at a time, and only completes qualification after collecting the required context.
 
-- entender a necessidade do potencial cliente;
-- fazer perguntas curtas e relevantes;
-- diferenciar contexto B2C e B2B;
-- identificar intenção comercial;
-- qualificar um lead;
-- gerar um resumo estruturado para o corretor;
-- transmitir a sensação de que o site da corretora pode trabalhar comercialmente 24 horas por dia.
+The result is a concise commercial analysis that visitors can review, edit, and voluntarily share with a Luminar specialist through WhatsApp.
 
-## Escopo obrigatório
+## Highlights
 
-A implementação inicial deve conter apenas:
+- Natural-language qualification for individual and business customers
+- Context-aware questions based on the insurance category
+- Structured extraction of profile, intent, location, current coverage, goals, and urgency
+- Server-validated state that prevents premature qualification
+- Editable specialist summary with explicit sharing consent
+- Graceful human handoff when the AI provider is unavailable
+- Session-based conversation persistence
+- Responsive and accessible desktop/mobile interface
+- Premium visual direction tailored to the insurance market
 
-- uma landing page simples;
-- identidade visual inspirada em uma corretora premium, usando tons escuros, dourado e alto contraste;
-- componente de chat;
-- integração server-side com um LLM;
-- prompt de sistema especializado no contexto da Luminar;
-- estado da conversa em memória da sessão/navegador;
-- limite simples de mensagens por sessão;
-- resposta final em formato de qualificação comercial;
-- disclaimer deixando claro que a análise final depende de um corretor humano.
+## How it works
 
-## Fora de escopo nesta fase
+```mermaid
+flowchart LR
+    A[Visitor describes a need] --> B[AI extracts structured context]
+    B --> C{Required context complete?}
+    C -- No --> D[Ask one relevant question]
+    D --> B
+    C -- Yes --> E[Generate commercial analysis]
+    E --> F[Visitor reviews and consents]
+    F --> G[Continue with a specialist]
+```
 
-Não implementar agora:
+The model proposes a response and a structured qualification state. The server validates that state, calculates the required fields for the detected scenario, and decides whether to continue or generate the final analysis. Completion criteria therefore remain in application code instead of relying exclusively on model behavior.
 
-- CMS;
-- Sanity;
-- RAG;
-- banco de dados;
-- autenticação;
-- dashboard;
-- CRM;
-- envio real de leads por e-mail;
-- WhatsApp API;
-- analytics avançado;
-- múltiplas páginas institucionais;
-- blog;
-- SEO completo;
-- infraestrutura definitiva de produção.
+## Tech stack
 
-Esses pontos fazem parte de uma futura versão comercial, caso a proposta seja aprovada.
-
-## Cenário principal da demonstração
-
-A experiência deve funcionar especialmente bem para entradas como:
-
-> Tenho uma empresa com 80 funcionários e o plano de saúde ficou muito caro.
-
-O assistente deve fazer poucas perguntas, entender o contexto e produzir algo como:
-
-- Perfil: Empresa
-- Colaboradores: 80
-- Interesse: Saúde empresarial
-- Situação atual: Já possui plano
-- Problema: Reajuste elevado
-- Objetivo: Redução de custos
-- Urgência: Curto prazo
-- Prioridade comercial: Alta
-
-## Stack sugerida
-
-- Astro
+- [Astro](https://astro.build/) with server-side rendering
 - TypeScript
-- Tailwind CSS
-- API route server-side
-- SDK oficial do provedor de LLM escolhido
+- SCSS with component-scoped styles
+- OpenAI Responses API
+- JSON Schema structured outputs
+- Native browser APIs and `sessionStorage`
 
-O protótipo deve priorizar simplicidade e baixo acoplamento.
+## Architecture
 
-## Filosofia do projeto
+```text
+src/
+|-- components/
+|   |-- chat-message/          Message presentation
+|   |-- luminar-smart/         Chat interface and client behavior
+|   `-- qualification-card/    Structured analysis presentation
+|-- pages/
+|   |-- api/chat.ts            AI orchestration and server validation
+|   `-- index.astro            Landing page
+`-- styles/                    Global and page-level styles
+```
 
-Este repositório é uma **prova de conceito comercial**.
+The API key is read exclusively by the server route. It is never embedded in client-side JavaScript or returned to the browser. Model responses are constrained by a strict schema and validated again before reaching the interface.
 
-Antes de adicionar qualquer recurso, pergunte:
+## Run locally
 
-> Isso ajuda a demonstrar o valor da IA para a Luminar durante uma reunião comercial?
-
-Se a resposta for não, não implemente nesta fase.
-
-## Execução esperada pelo Codex
-
-Leia primeiro:
-
-1. `CODEX.md`
-2. `docs/product-context.md`
-3. `docs/ux-flow.md`
-4. `docs/ai-behavior.md`
-5. `docs/technical-guidelines.md`
-
-Implemente o protótipo respeitando rigorosamente o escopo.
-
-## Executar localmente
-
-Requer Node.js 20 ou superior.
-
-1. Copie `.env.example` para `.env`.
-2. Preencha `LLM_API_KEY` com uma chave da OpenAI e `LLM_MODEL` com um modelo disponível na conta.
-3. Instale e execute:
+Requirements: Node.js 20+ and an OpenAI API key with access to the configured model.
 
 ```bash
+git clone git@github.com:ruanmbramalho/luminar-smart-demo.git
+cd luminar-smart-demo
 npm install
+cp .env.example .env
 npm run dev
 ```
 
-Abra `http://localhost:4321`. A chave é lida somente pela rota server-side `POST /api/chat` e nunca é enviada ao navegador.
+On Windows PowerShell, replace the copy command with:
 
-Para validar e executar o build de produção:
+```powershell
+Copy-Item .env.example .env
+```
+
+Configure `.env`:
+
+```env
+LLM_API_KEY=your_openai_api_key
+LLM_MODEL=gpt-5-mini
+```
+
+Open [http://localhost:4321](http://localhost:4321).
+
+## Validation and production build
 
 ```bash
+npm run check
 npm run build
 npm run preview
 ```
+
+## Safety and privacy
+
+- The assistant does not request CPF/CNPJ, full addresses, payment details, medical information, or other sensitive data.
+- User input is treated as untrusted content and cannot override agent instructions.
+- Request size, message count, response format, and model output are validated server-side.
+- Provider requests use a timeout, limited retries, and non-persistent processing (`store: false`).
+- WhatsApp handoff requires explicit consent and allows the visitor to edit the context before sharing.
+- Results are preliminary qualification, not insurance, legal, medical, or financial advice.
+
+## Prototype boundaries
+
+This is a portfolio proof of concept, not a production insurance platform. It intentionally excludes authentication, databases, CRM synchronization, WhatsApp Business API automation, analytics, RAG, and production infrastructure. The handoff opens a prefilled WhatsApp conversation after consent; it does not send data automatically.
+
+## Design rationale
+
+This experience was designed for a commercial presentation, not as a generic chatbot. Its dark palette, restrained gold accents, progressive conversation, and structured analysis communicate trust, clarity, and premium positioning while keeping the interaction lightweight.
+
+## Author
+
+Built by [Ruan Bramalho](https://github.com/ruanmbramalho) as a product and AI engineering portfolio project.
+
+## License
+
+Shared publicly for portfolio and demonstration purposes. No license is currently granted for commercial reuse, redistribution, or derivative works.
