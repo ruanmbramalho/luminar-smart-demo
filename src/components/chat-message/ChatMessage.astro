@@ -1,0 +1,14 @@
+---
+interface Props {
+  role: 'assistant' | 'user';
+  content: string;
+}
+
+const { role, content } = Astro.props;
+import './ChatMessage.scss';
+---
+
+<article class:list={['message', `message--${role}`]} aria-label={role === 'assistant' ? 'Luminar Smart' : 'Você'}>
+  {role === 'assistant' && <span class="message__mark" aria-hidden="true">L</span>}
+  <p>{content}</p>
+</article>
