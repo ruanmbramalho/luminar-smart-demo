@@ -97,6 +97,30 @@ npm run build
 npm run preview
 ```
 
+## Development workflow
+
+The repository uses a lightweight branch strategy:
+
+- `main`: production-ready code deployed by Hostinger
+- `develop`: integration branch for approved changes
+- `feature/*`: new product functionality
+- `fix/*`: bug fixes
+- `chore/*`: tooling, infrastructure, and maintenance
+- `docs/*`: documentation-only changes
+
+Create working branches from `develop` and open a pull request back into `develop`. When a release is ready, open a pull request from `develop` into `main`.
+
+```bash
+git switch develop
+git pull
+git switch -c feature/short-description
+
+# Work and commit normally
+git push -u origin feature/short-description
+```
+
+GitHub Actions runs the TypeScript validation and production build on pull requests and pushes to `develop` or `main`. Hostinger handles continuous deployment from `main`, so only reviewed release merges reach the public environment.
+
 ## Safety and privacy
 
 - The assistant does not request CPF/CNPJ, full addresses, payment details, medical information, or other sensitive data.
