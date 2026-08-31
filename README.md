@@ -18,8 +18,9 @@ The result is a concise commercial analysis that visitors can review, edit, and 
 - Server-validated state that prevents premature qualification
 - Editable specialist summary with explicit sharing consent
 - Graceful human handoff when the AI provider is unavailable
-- Session-based conversation persistence
+- Persistent conversation memory across browser restarts
 - Responsive and accessible desktop/mobile interface
+- Installable PWA with offline shell and locally preserved conversation
 - Premium visual direction tailored to the insurance market
 
 ## How it works
@@ -44,7 +45,7 @@ The model proposes a response and a structured qualification state. The server v
 - SCSS with component-scoped styles
 - OpenAI Responses API
 - JSON Schema structured outputs
-- Native browser APIs and `sessionStorage`
+- Native browser APIs and versioned `localStorage`
 
 ## Architecture
 
@@ -61,6 +62,8 @@ src/
 ```
 
 The API key is read exclusively by the server route. It is never embedded in client-side JavaScript or returned to the browser. Model responses are constrained by a strict schema and validated again before reaching the interface.
+
+Conversation messages and the structured qualification state are stored only in the visitor's browser. This local memory survives page reloads and browser restarts until the visitor uses **Reiniciar conversa** or clears the site's browser data; no conversation database is used.
 
 ## Run locally
 
@@ -88,6 +91,12 @@ LLM_MODEL=gpt-5-mini
 ```
 
 Open [http://localhost:4321](http://localhost:4321).
+
+### Install as an app
+
+On supported browsers, use the **Install app** action in the header. On iOS, use the browser share menu and choose **Add to Home Screen**. Installation requires HTTPS in production (localhost is accepted during development).
+
+The PWA caches only the application shell and static assets. Conversation memory remains local to the device, while AI requests are never cached and still require an internet connection.
 
 ## Validation and production build
 
@@ -127,6 +136,7 @@ GitHub Actions runs the TypeScript validation and production build on pull reque
 - User input is treated as untrusted content and cannot override agent instructions.
 - Request size, message count, response format, and model output are validated server-side.
 - Provider requests use a timeout, limited retries, and non-persistent processing (`store: false`).
+- Conversation memory is local to the browser and can be erased at any time with **Reiniciar conversa**.
 - WhatsApp handoff requires explicit consent and allows the visitor to edit the context before sharing.
 - Results are preliminary qualification, not insurance, legal, medical, or financial advice.
 
