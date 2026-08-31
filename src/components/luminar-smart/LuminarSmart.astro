@@ -107,6 +107,9 @@ const suggestions = [
   const chatShell = document.querySelector<HTMLElement>('.chat-shell')!;
   const form = document.querySelector<HTMLFormElement>('#chat-form')!;
   const input = document.querySelector<HTMLTextAreaElement>('#chat-input')!;
+  const submitButton = form.querySelector<HTMLButtonElement>(
+    'button[type="submit"]',
+  )!;
   const suggestionsElement =
     document.querySelector<HTMLDivElement>('#suggestions')!;
   const resetButton = document.querySelector<HTMLButtonElement>('#reset-chat')!;
@@ -484,10 +487,7 @@ const suggestions = [
 
   function setLoading(value: boolean): void {
     loading = value;
-    form
-      .querySelector('button')!
-      .toggleAttribute('disabled', value || !navigator.onLine);
-    input.toggleAttribute('disabled', value);
+    submitButton.toggleAttribute('disabled', value || !navigator.onLine);
     messagesElement.setAttribute('aria-busy', String(value));
     messagesElement.querySelector('.typing')?.remove();
     if (value) {
@@ -552,21 +552,56 @@ const suggestions = [
       renderAll();
     } finally {
       setLoading(false);
-      input.focus();
+      input.focus({ preventScroll: true });
     }
+  }
+
+  let focusAlignmentTimer: number | undefined;
+
+  function updateVisualViewportHeight(): void {
+    const viewportHeight = window.visualViewport?.height ?? window.innerHeight;
+    document.documentElement.style.setProperty(
+      '--visual-viewport-height',
+      `${viewportHeight}px`,
+    );
+  }
+
+  function activateMobileChatFocus(): void {
+    if (!window.matchMedia('(max-width: 700px)').matches) return;
+    chatShell.classList.add('chat-shell--focused');
+    updateVisualViewportHeight();
+    window.clearTimeout(focusAlignmentTimer);
+    focusAlignmentTimer = window.setTimeout(() => {
+      chatShell.scrollIntoView({ block: 'start', behavior: 'auto' });
+    }, 180);
+  }
+
+  function releaseMobileChatFocus(): void {
+    window.setTimeout(() => {
+      if (!form.contains(document.activeElement)) {
+        chatShell.classList.remove('chat-shell--focused');
+      }
+    }, 120);
   }
 
   function updateConnectionState(): void {
     const online = navigator.onLine;
     chatShell.classList.toggle('chat-shell--offline', !online);
     statusElement.innerHTML = `<span></span> ${online ? 'Assistente disponível' : 'Sem conexão'}`;
-    form
-      .querySelector('button')!
-      .toggleAttribute('disabled', loading || !online);
+    submitButton.toggleAttribute('disabled', loading || !online);
   }
 
   window.addEventListener('online', updateConnectionState);
   window.addEventListener('offline', updateConnectionState);
+  window.visualViewport?.addEventListener('resize', updateVisualViewportHeight);
+  form.addEventListener('focusin', activateMobileChatFocus);
+  form.addEventListener('focusout', releaseMobileChatFocus);
+
+  submitButton.addEventListener('pointerdown', (event) => {
+    if (document.activeElement !== input) return;
+    event.preventDefault();
+    form.requestSubmit();
+  });
 
   form.addEventListener('submit', (event) => {
     event.preventDefault();
@@ -602,4 +637,5 @@ const suggestions = [
   });
   restore();
   updateConnectionState();
+  updateVisualViewportHeight();
 </script>
