@@ -15,9 +15,22 @@
   text-transform: uppercase;
   letter-spacing: 0.12em;
 
-  > span:last-child { display: flex; flex-direction: column; line-height: 0.95; }
-  strong { font-family: Manrope, sans-serif; font-size: 16px; font-weight: 500; }
-  small { color: var(--gold); font-size: 8px; margin-top: 6px; letter-spacing: 0.35em; }
+  > span:last-child {
+    display: flex;
+    flex-direction: column;
+    line-height: 0.95;
+  }
+  strong {
+    font-family: Manrope, sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+  }
+  small {
+    color: var(--gold);
+    font-size: 8px;
+    margin-top: 6px;
+    letter-spacing: 0.35em;
+  }
 }
 
 .brand-symbol {
@@ -29,10 +42,29 @@
 
   &::before,
   &::after,
-  i { content: ''; position: absolute; background: var(--gold); }
-  &::before { width: 1px; height: 24px; left: 10px; top: 4px; }
-  &::after { width: 1px; height: 24px; right: 10px; top: 4px; }
-  i { width: 14px; height: 1px; left: 9px; bottom: 9px; }
+  i {
+    content: '';
+    position: absolute;
+    background: var(--gold);
+  }
+  &::before {
+    width: 1px;
+    height: 24px;
+    left: 10px;
+    top: 4px;
+  }
+  &::after {
+    width: 1px;
+    height: 24px;
+    right: 10px;
+    top: 4px;
+  }
+  i {
+    width: 14px;
+    height: 1px;
+    left: 9px;
+    bottom: 9px;
+  }
 }
 
 .concept-badge {
@@ -64,12 +96,25 @@
 
   h1 {
     margin: 20px 0;
-    font: 500 clamp(40px, 6vw, 70px) / 1.08 Manrope, sans-serif;
+    font:
+      500 clamp(40px, 6vw, 70px) / 1.08 Manrope,
+      sans-serif;
     letter-spacing: -0.055em;
-    em { color: var(--gold-light); font-family: 'Playfair Display', serif; font-weight: 500; }
+    em {
+      color: var(--gold-light);
+      font-family: 'Playfair Display', serif;
+      font-weight: 500;
+    }
   }
 
-  > p { color: #a5a8a8; max-width: 650px; margin: 0 auto; font: 400 16px / 1.8 Manrope, sans-serif; }
+  > p {
+    color: #a5a8a8;
+    max-width: 650px;
+    margin: 0 auto;
+    font:
+      400 16px / 1.8 Manrope,
+      sans-serif;
+  }
 }
 
 .eyebrow {
@@ -78,10 +123,16 @@
   align-items: center;
   gap: 11px;
   color: var(--gold);
-  font: 500 10px Manrope, sans-serif;
+  font:
+    500 10px Manrope,
+    sans-serif;
   letter-spacing: 0.25em;
   text-transform: uppercase;
-  span { width: 28px; height: 1px; background: var(--gold); }
+  span {
+    width: 28px;
+    height: 1px;
+    background: var(--gold);
+  }
 }
 
 .value-strip {
@@ -96,12 +147,29 @@
     align-items: center;
     gap: 14px;
     padding: 23px 25px;
-    + div { border-left: 1px solid rgba(255, 255, 255, 0.055); }
+    + div {
+      border-left: 1px solid rgba(255, 255, 255, 0.055);
+    }
   }
 
-  span { color: var(--gold); font: italic 14px 'Playfair Display', serif; }
-  p { margin: 0; color: #696e6e; font-size: 9.5px; line-height: 1.5; }
-  strong { display: block; color: #bbbdb9; font-size: 10px; font-weight: 500; }
+  span {
+    color: var(--gold);
+    font:
+      italic 14px 'Playfair Display',
+      serif;
+  }
+  p {
+    margin: 0;
+    color: #696e6e;
+    font-size: 9.5px;
+    line-height: 1.5;
+  }
+  strong {
+    display: block;
+    color: #bbbdb9;
+    font-size: 10px;
+    font-weight: 500;
+  }
 }
 
 footer {
@@ -112,30 +180,59 @@ footer {
   border-top: 1px solid rgba(255, 255, 255, 0.055);
   color: #5e6261;
   font-size: 9.5px;
-  p { margin: 0; }
-  strong { color: #888c89; font-weight: 500; }
-  span { white-space: nowrap; margin-left: 20px; }
+  p {
+    margin: 0;
+  }
+  strong {
+    color: #888c89;
+    font-weight: 500;
+  }
+  span {
+    white-space: nowrap;
+    margin-left: 20px;
+  }
 }
 
 @media (max-width: 700px) {
-  .topbar { height: 74px; }
-  .concept-badge { font-size: 8px; padding: 7px 9px; }
+  .topbar {
+    height: 74px;
+  }
+  .concept-badge {
+    font-size: 8px;
+    padding: 7px 9px;
+  }
   .hero {
     padding: 60px 6px 38px;
-    h1 { font-size: clamp(36px, 11vw, 52px); }
-    > p { font-size: 14px; line-height: 1.65; }
+    h1 {
+      font-size: clamp(36px, 11vw, 52px);
+    }
+    > p {
+      font-size: 14px;
+      line-height: 1.65;
+    }
   }
   .value-strip {
     grid-template-columns: 1fr;
     margin: 34px auto 68px;
     > div {
       padding: 16px 20px;
-      + div { border-left: 0; border-top: 1px solid rgba(255, 255, 255, 0.055); }
+      + div {
+        border-left: 0;
+        border-top: 1px solid rgba(255, 255, 255, 0.055);
+      }
     }
   }
-  footer { padding: 20px 0; gap: 12px; align-items: flex-start; line-height: 1.5; }
+  footer {
+    padding: 20px 0;
+    gap: 12px;
+    align-items: flex-start;
+    line-height: 1.5;
+  }
 }
 
 @media (max-width: 390px) {
-  .concept-badge { max-width: 110px; line-height: 1.3; }
+  .concept-badge {
+    max-width: 110px;
+    line-height: 1.3;
+  }
 }

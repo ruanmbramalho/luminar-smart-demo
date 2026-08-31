@@ -1,7 +1,11 @@
 .qualification {
   margin: 4px 0 20px;
   border: 1px solid rgba(201, 164, 94, 0.35);
-  background: linear-gradient(145deg, rgba(41, 35, 24, 0.78), rgba(20, 20, 17, 0.9));
+  background: linear-gradient(
+    145deg,
+    rgba(41, 35, 24, 0.78),
+    rgba(20, 20, 17, 0.9)
+  );
   border-radius: 13px;
   overflow: hidden;
   animation: message-in 0.4s ease both;
@@ -27,7 +31,9 @@
 
     h3 {
       margin: 3px 0 0;
-      font: 500 16px Manrope, sans-serif;
+      font:
+        500 16px Manrope,
+        sans-serif;
       text-transform: uppercase;
       letter-spacing: 0.05em;
     }
@@ -50,9 +56,21 @@
     margin: 0;
     padding: 8px 18px;
 
-    div { padding: 10px 8px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
-    dt { color: #777b79; font-size: 9px; text-transform: uppercase; letter-spacing: 0.08em; }
-    dd { margin: 4px 0 0; color: #e5e3dc; font-size: 12px; }
+    div {
+      padding: 10px 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    dt {
+      color: #777b79;
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    dd {
+      margin: 4px 0 0;
+      color: #e5e3dc;
+      font-size: 12px;
+    }
   }
 
   &__summary {
@@ -61,13 +79,29 @@
     background: rgba(0, 0, 0, 0.18);
     border-left: 2px solid var(--gold);
 
-    span { color: var(--gold); font-size: 8px; text-transform: uppercase; letter-spacing: 0.14em; }
-    p { margin: 7px 0 0; color: #c3c3bd; font-size: 11.5px; line-height: 1.6; }
+    span {
+      color: var(--gold);
+      font-size: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+    }
+    p {
+      margin: 7px 0 0;
+      color: #c3c3bd;
+      font-size: 11.5px;
+      line-height: 1.6;
+    }
   }
 
-  &__next { margin: 0 18px 17px; color: #737774; font-size: 9.5px; }
+  &__next {
+    margin: 0 18px 17px;
+    color: #737774;
+    font-size: 9.5px;
+  }
 }
 
 @media (max-width: 700px) {
-  .qualification__grid { grid-template-columns: 1fr; }
+  .qualification__grid {
+    grid-template-columns: 1fr;
+  }
 }

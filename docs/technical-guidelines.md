@@ -46,9 +46,7 @@ Payload sugerido:
 
 ```json
 {
-  "messages": [
-    { "role": "user", "content": "..." }
-  ]
+  "messages": [{ "role": "user", "content": "..." }]
 }
 ```
 

@@ -3,14 +3,22 @@
   margin: 0 auto;
   border: 1px solid var(--line);
   border-radius: 18px;
-  background: linear-gradient(145deg, rgba(18, 22, 25, 0.98), rgba(12, 15, 17, 0.98));
-  box-shadow: 0 35px 100px rgba(0, 0, 0, 0.38), inset 0 1px rgba(255, 255, 255, 0.025);
+  background: linear-gradient(
+    145deg,
+    rgba(18, 22, 25, 0.98),
+    rgba(12, 15, 17, 0.98)
+  );
+  box-shadow:
+    0 35px 100px rgba(0, 0, 0, 0.38),
+    inset 0 1px rgba(255, 255, 255, 0.025);
   overflow: hidden;
   animation: enter 0.8s 0.1s ease both;
 
   &--terminal {
     .composer,
-    .privacy-note { display: none; }
+    .privacy-note {
+      display: none;
+    }
   }
 }
 
@@ -29,14 +37,27 @@
   align-items: center;
   gap: 13px;
 
-  h2 { font: 500 14px Manrope, sans-serif; margin: 0 0 5px; letter-spacing: 0.02em; }
+  h2 {
+    font:
+      500 14px Manrope,
+      sans-serif;
+    margin: 0 0 5px;
+    letter-spacing: 0.02em;
+  }
   p {
     color: #7f8483;
     font-size: 10px;
     margin: 0;
     text-transform: uppercase;
     letter-spacing: 0.09em;
-    span { display: inline-block; width: 5px; height: 5px; background: #70b590; border-radius: 50%; margin-right: 4px; }
+    span {
+      display: inline-block;
+      width: 5px;
+      height: 5px;
+      background: #70b590;
+      border-radius: 50%;
+      margin-right: 4px;
+    }
   }
 }
 
@@ -70,8 +91,13 @@
   color: #767b7a;
   transition: 0.2s;
 
-  &:hover { color: var(--gold-light); background: rgba(255, 255, 255, 0.04); }
-  svg { width: 17px; }
+  &:hover {
+    color: var(--gold-light);
+    background: rgba(255, 255, 255, 0.04);
+  }
+  svg {
+    width: 17px;
+  }
 }
 
 .reset-button svg,
@@ -94,9 +120,22 @@
 
 .suggestions {
   padding: 0 24px 18px 61px;
-  &[hidden] { display: none; }
-  > span { display: block; color: #6e7373; font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 9px; }
-  > div { display: flex; gap: 7px; flex-wrap: wrap; }
+  &[hidden] {
+    display: none;
+  }
+  > span {
+    display: block;
+    color: #6e7373;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 9px;
+  }
+  > div {
+    display: flex;
+    gap: 7px;
+    flex-wrap: wrap;
+  }
   button {
     text-align: left;
     border: 1px solid rgba(201, 164, 94, 0.16);
@@ -108,7 +147,12 @@
     line-height: 1.4;
     cursor: pointer;
     transition: 0.2s;
-    &:hover { color: var(--gold-light); border-color: rgba(201, 164, 94, 0.4); background: rgba(201, 164, 94, 0.08); transform: translateY(-1px); }
+    &:hover {
+      color: var(--gold-light);
+      border-color: rgba(201, 164, 94, 0.4);
+      background: rgba(201, 164, 94, 0.08);
+      transform: translateY(-1px);
+    }
   }
 }
 
@@ -124,7 +168,9 @@
   border-radius: 12px;
   transition: border-color 0.2s;
 
-  &:focus-within { border-color: rgba(201, 164, 94, 0.42); }
+  &:focus-within {
+    border-color: rgba(201, 164, 94, 0.42);
+  }
   textarea {
     flex: 1;
     resize: none;
@@ -137,7 +183,9 @@
     background: transparent;
     font-size: 12px;
     line-height: 1.5;
-    &::placeholder { color: #636767; }
+    &::placeholder {
+      color: #636767;
+    }
   }
   button {
     flex: 0 0 auto;
@@ -151,9 +199,18 @@
     color: #111;
     cursor: pointer;
     transition: 0.2s;
-    &:hover { filter: brightness(1.1); transform: translateY(-1px); }
-    &:disabled { opacity: 0.45; cursor: wait; transform: none; }
-    svg { width: 18px; }
+    &:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+    }
+    &:disabled {
+      opacity: 0.45;
+      cursor: wait;
+      transform: none;
+    }
+    svg {
+      width: 18px;
+    }
   }
 }
 
@@ -165,7 +222,9 @@
   margin: 10px 20px 16px;
   color: #5e6262;
   font-size: 9.5px;
-  svg { width: 11px; }
+  svg {
+    width: 11px;
+  }
 }
 
 .handoff {
@@ -182,10 +241,26 @@
     display: flex;
     flex-direction: column;
     gap: 3px;
-    span { color: #777d79; font-size: 9.5px; line-height: 1.45; }
+    span {
+      color: #777d79;
+      font-size: 9.5px;
+      line-height: 1.45;
+    }
   }
-  strong { color: #daddd8; font: 500 11px Manrope, sans-serif; }
-  &__label { display: grid; gap: 6px; color: #858a87; font-size: 8px; letter-spacing: 0.1em; text-transform: uppercase; }
+  strong {
+    color: #daddd8;
+    font:
+      500 11px Manrope,
+      sans-serif;
+  }
+  &__label {
+    display: grid;
+    gap: 6px;
+    color: #858a87;
+    font-size: 8px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
   &__summary {
     width: 100%;
     resize: vertical;
@@ -198,19 +273,31 @@
     padding: 11px 12px;
     background: rgba(0, 0, 0, 0.22);
     color: #cfd2cd;
-    font: 400 10.5px / 1.55 'DM Sans', sans-serif;
+    font:
+      400 10.5px / 1.55 'DM Sans',
+      sans-serif;
     text-transform: none;
     letter-spacing: 0;
     transition: border-color 0.2s;
-    &:focus { border-color: rgba(201, 164, 94, 0.4); }
+    &:focus {
+      border-color: rgba(201, 164, 94, 0.4);
+    }
   }
   &__consent {
     display: flex;
     align-items: flex-start;
     gap: 8px;
     cursor: pointer;
-    input { flex: 0 0 auto; margin: 2px 0 0; accent-color: #4f9a70; }
-    span { color: #929793; font-size: 9.5px; line-height: 1.45; }
+    input {
+      flex: 0 0 auto;
+      margin: 2px 0 0;
+      accent-color: #4f9a70;
+    }
+    span {
+      color: #929793;
+      font-size: 9.5px;
+      line-height: 1.45;
+    }
   }
   a {
     justify-self: end;
@@ -222,8 +309,15 @@
     font-weight: 600;
     text-decoration: none;
     transition: 0.2s;
-    &:hover { background: #67b386; transform: translateY(-1px); }
-    &[aria-disabled='true'] { opacity: 0.38; cursor: not-allowed; transform: none; }
+    &:hover {
+      background: #67b386;
+      transform: translateY(-1px);
+    }
+    &[aria-disabled='true'] {
+      opacity: 0.38;
+      cursor: not-allowed;
+      transform: none;
+    }
   }
 }
 
@@ -241,8 +335,21 @@
   border-radius: 10px;
   background: rgba(14, 17, 18, 0.96);
   box-shadow: 0 -12px 28px rgba(8, 10, 12, 0.9);
-  span { color: #8c908d; font-size: 9.5px; }
-  button { flex: 0 0 auto; border: 0; border-radius: 8px; padding: 10px 13px; background: linear-gradient(135deg, #d5b775, #a98646); color: #111; font-size: 10px; font-weight: 600; cursor: pointer; }
+  span {
+    color: #8c908d;
+    font-size: 9.5px;
+  }
+  button {
+    flex: 0 0 auto;
+    border: 0;
+    border-radius: 8px;
+    padding: 10px 13px;
+    background: linear-gradient(135deg, #d5b775, #a98646);
+    color: #111;
+    font-size: 10px;
+    font-weight: 600;
+    cursor: pointer;
+  }
 }
 
 .handoff-dialog {
@@ -255,39 +362,80 @@
   background: #101416;
   color: var(--text);
   box-shadow: 0 30px 100px rgba(0, 0, 0, 0.7);
-  &::backdrop { background: rgba(3, 5, 6, 0.78); backdrop-filter: blur(5px); }
-  &__close { position: absolute; top: 10px; right: 12px; width: 30px; height: 30px; border: 0; border-radius: 50%; background: rgba(255, 255, 255, 0.05); color: #aaa; font-size: 20px; line-height: 1; cursor: pointer; }
-  .handoff { margin: 0; }
+  &::backdrop {
+    background: rgba(3, 5, 6, 0.78);
+    backdrop-filter: blur(5px);
+  }
+  &__close {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    width: 30px;
+    height: 30px;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    color: #aaa;
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .handoff {
+    margin: 0;
+  }
 }
 
 @media (max-width: 700px) {
-  .chat-shell { border-radius: 14px; }
-  .chat-header { height: 68px; padding: 0 16px; }
-  .messages { height: 350px; padding: 20px 14px 14px; }
+  .chat-shell {
+    border-radius: 14px;
+  }
+  .chat-header {
+    height: 68px;
+    padding: 0 16px;
+  }
+  .messages {
+    height: 350px;
+    padding: 20px 14px 14px;
+  }
   .suggestions {
     padding: 0 14px 14px;
-    > div { display: grid; }
-    button { font-size: 10px; }
+    > div {
+      display: grid;
+    }
+    button {
+      font-size: 10px;
+    }
   }
   .composer {
     margin-inline: 12px;
     padding-left: 13px;
 
-    textarea { font-size: 16px; }
+    textarea {
+      font-size: 16px;
+    }
   }
   .handoff {
     margin-left: 0;
 
-    &__summary { font-size: 16px; }
-    a { width: 100%; text-align: center; }
+    &__summary {
+      font-size: 16px;
+    }
+    a {
+      width: 100%;
+      text-align: center;
+    }
   }
   .handoff-launcher {
     align-items: stretch;
     flex-direction: column;
-    button { width: 100%; }
+    button {
+      width: 100%;
+    }
   }
 }
 
 @media (max-width: 390px) {
-  .messages { height: 330px; }
+  .messages {
+    height: 330px;
+  }
 }

@@ -19,30 +19,60 @@ const suggestions = [
         <p><span></span> Assistente disponível</p>
       </div>
     </div>
-    <button class="reset-button" id="reset-chat" type="button" aria-label="Reiniciar conversa" title="Reiniciar conversa">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8.1 8.1 0 1 0-2.3 6M20 4v7h-7" /></svg>
+    <button
+      class="reset-button"
+      id="reset-chat"
+      type="button"
+      aria-label="Reiniciar conversa"
+      title="Reiniciar conversa"
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true"
+        ><path d="M20 11a8.1 8.1 0 1 0-2.3 6M20 4v7h-7"></path></svg
+      >
     </button>
   </header>
 
   <div class="messages" id="messages" aria-live="polite" aria-busy="false">
-    <ChatMessage role="assistant" content="Olá! Sou o Luminar Smart. Posso ajudar a entender sua necessidade e direcionar você para a solução mais adequada. Como posso ajudar?" />
+    <ChatMessage
+      role="assistant"
+      content="Olá! Sou o Luminar Smart. Posso ajudar a entender sua necessidade e direcionar você para a solução mais adequada. Como posso ajudar?"
+    />
   </div>
 
   <div class="suggestions" id="suggestions" aria-label="Sugestões para começar">
     <span>Experimente perguntar</span>
     <div>
-      {suggestions.map((suggestion) => <button type="button" data-suggestion={suggestion}>{suggestion}</button>)}
+      {
+        suggestions.map((suggestion) => (
+          <button type="button" data-suggestion={suggestion}>
+            {suggestion}
+          </button>
+        ))
+      }
     </div>
   </div>
 
   <form class="composer" id="chat-form">
     <label class="sr-only" for="chat-input">Digite sua mensagem</label>
-    <textarea id="chat-input" name="message" maxlength="1200" rows="1" placeholder="Conte brevemente o que você precisa..." required></textarea>
+    <textarea
+      id="chat-input"
+      name="message"
+      maxlength="1200"
+      rows="1"
+      placeholder="Conte brevemente o que você precisa..."
+      required></textarea>
     <button type="submit" aria-label="Enviar mensagem">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 14-7-4 14-3-6-7-1Z" /><path d="m12 13 7-8" /></svg>
+      <svg viewBox="0 0 24 24" aria-hidden="true"
+        ><path d="m5 12 14-7-4 14-3-6-7-1Z"></path><path d="m12 13 7-8"
+        ></path></svg
+      >
     </button>
   </form>
-  <p class="privacy-note"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10V7a5 5 0 0 1 10 0v3M5 10h14v10H5z" /></svg> Não informe dados pessoais ou sensíveis nesta demonstração.</p>
+  <p class="privacy-note">
+    <svg viewBox="0 0 24 24" aria-hidden="true"
+      ><path d="M7 10V7a5 5 0 0 1 10 0v3M5 10h14v10H5z"></path></svg
+    > Não informe dados pessoais ou sensíveis nesta demonstração.
+  </p>
   <QualificationCard />
 </section>
 
@@ -50,19 +80,31 @@ const suggestions = [
   type Role = 'user' | 'assistant';
   type Message = { role: Role; content: string };
   type AgentState = Record<string, unknown>;
+  type PersistentMemory = {
+    version: 2;
+    updatedAt: string;
+    messages: Message[];
+    agentState: AgentState | null;
+  };
 
-  const STORAGE_KEY = 'luminar-smart-conversation-v1';
-  const STATE_STORAGE_KEY = 'luminar-smart-state-v1';
+  const MEMORY_STORAGE_KEY = 'luminar-smart-memory-v2';
+  const LEGACY_MESSAGES_KEY = 'luminar-smart-conversation-v1';
+  const LEGACY_STATE_KEY = 'luminar-smart-state-v1';
   const RECENT_MESSAGES_LIMIT = 8;
   const MAX_STORED_MESSAGES = 120;
   const WHATSAPP_NUMBER = '5581987997274';
-  const INITIAL_MESSAGE = 'Olá! Sou o Luminar Smart. Posso ajudar a entender sua necessidade e direcionar você para a solução mais adequada. Como posso ajudar?';
-  const HANDOFF_MESSAGE = 'Muito obrigado pelas informações. Organizei o contexto que você compartilhou para continuarmos seu atendimento com um especialista da Luminar.';
+  const INITIAL_MESSAGE =
+    'Olá! Sou o Luminar Smart. Posso ajudar a entender sua necessidade e direcionar você para a solução mais adequada. Como posso ajudar?';
+  const HANDOFF_MESSAGE =
+    'Muito obrigado pelas informações. Organizei o contexto que você compartilhou para continuarmos seu atendimento com um especialista da Luminar.';
+  const UNKNOWN_HANDOFF_MESSAGE =
+    'Não sei responder isso com segurança com base no contexto disponível. Vou encaminhar seu atendimento para um especialista da Luminar, que poderá orientar você corretamente.';
   const messagesElement = document.querySelector<HTMLDivElement>('#messages')!;
   const chatShell = document.querySelector<HTMLElement>('.chat-shell')!;
   const form = document.querySelector<HTMLFormElement>('#chat-form')!;
   const input = document.querySelector<HTMLTextAreaElement>('#chat-input')!;
-  const suggestionsElement = document.querySelector<HTMLDivElement>('#suggestions')!;
+  const suggestionsElement =
+    document.querySelector<HTMLDivElement>('#suggestions')!;
   const resetButton = document.querySelector<HTMLButtonElement>('#reset-chat')!;
   let messages: Message[] = [{ role: 'assistant', content: INITIAL_MESSAGE }];
   let agentState: AgentState | null = null;
@@ -73,7 +115,10 @@ const suggestions = [
   function createMessage(message: Message): HTMLElement {
     const article = document.createElement('article');
     article.className = `message message--${escapeSelector(message.role)}`;
-    article.setAttribute('aria-label', message.role === 'assistant' ? 'Luminar Smart' : 'Você');
+    article.setAttribute(
+      'aria-label',
+      message.role === 'assistant' ? 'Luminar Smart' : 'Você',
+    );
     if (message.role === 'assistant') {
       const mark = document.createElement('span');
       mark.className = 'message__mark';
@@ -87,25 +132,52 @@ const suggestions = [
     return article;
   }
 
-  function parseQualification(content: string): { fields: [string, string][]; summary: string } | null {
+  function parseQualification(
+    content: string,
+  ): { fields: [string, string][]; summary: string } | null {
     if (!/^#{0,3}\s*ANÁLISE LUMINAR SMART/im.test(content)) return null;
-    const labels = ['Perfil', 'Idade', 'Interesse', 'Pessoas a incluir', 'Colaboradores', 'Quantidade de colaboradores', 'Plano atual', 'Situação atual', 'Localização', 'Necessidade identificada', 'Objetivo', 'Urgência', 'Prioridade comercial'];
+    const labels = [
+      'Perfil',
+      'Idade',
+      'Interesse',
+      'Pessoas a incluir',
+      'Colaboradores',
+      'Quantidade de colaboradores',
+      'Plano atual',
+      'Situação atual',
+      'Localização',
+      'Necessidade identificada',
+      'Objetivo',
+      'Urgência',
+      'Prioridade comercial',
+    ];
     const fields: [string, string][] = [];
     for (const label of labels) {
       const pattern = new RegExp(`^\\s*(?:[-*]\\s*)?${label}:\\s*(.+)$`, 'im');
       const match = content.match(pattern);
-      if (match?.[1] && !fields.some(([existing]) => existing === label)) fields.push([label.replace('Quantidade de colaboradores', 'Colaboradores'), match[1].trim()]);
+      if (match?.[1] && !fields.some(([existing]) => existing === label))
+        fields.push([
+          label.replace('Quantidade de colaboradores', 'Colaboradores'),
+          match[1].trim(),
+        ]);
     }
-    const summary = content.match(/^\s*(?:[-*]\s*)?Resumo para o especialista:\s*(.+)$/im)?.[1]?.trim() ?? '';
+    const summary =
+      content
+        .match(/^\s*(?:[-*]\s*)?Resumo para o especialista:\s*(.+)$/im)?.[1]
+        ?.trim() ?? '';
     return fields.length && summary ? { fields, summary } : null;
   }
 
   function renderQualification(content: string): boolean {
     const qualification = parseQualification(content);
-    const template = document.querySelector<HTMLTemplateElement>('#qualification-template');
+    const template = document.querySelector<HTMLTemplateElement>(
+      '#qualification-template',
+    );
     if (!qualification || !template) return false;
     const fragment = template.content.cloneNode(true) as DocumentFragment;
-    const grid = fragment.querySelector<HTMLDListElement>('.qualification__grid')!;
+    const grid = fragment.querySelector<HTMLDListElement>(
+      '.qualification__grid',
+    )!;
     for (const [label, value] of qualification.fields) {
       const wrapper = document.createElement('div');
       const term = document.createElement('dt');
@@ -115,7 +187,9 @@ const suggestions = [
       wrapper.append(term, description);
       grid.append(wrapper);
     }
-    fragment.querySelector<HTMLParagraphElement>('.qualification__summary p')!.textContent = qualification.summary;
+    fragment.querySelector<HTMLParagraphElement>(
+      '.qualification__summary p',
+    )!.textContent = qualification.summary;
     messagesElement.append(fragment);
     const context = [
       ...qualification.fields.map(([label, value]) => `${label}: ${value}`),
@@ -164,7 +238,8 @@ const suggestions = [
     const title = document.createElement('strong');
     const description = document.createElement('span');
     title.textContent = 'Seu contexto está pronto';
-    description.textContent = 'Revise o resumo antes de continuar. Você pode editar qualquer informação.';
+    description.textContent =
+      'Revise o resumo antes de continuar. Você pode editar qualquer informação.';
     copy.append(title, description);
 
     const fieldLabel = document.createElement('label');
@@ -175,7 +250,10 @@ const suggestions = [
     summary.rows = 7;
     summary.maxLength = 1800;
     summary.value = context;
-    summary.setAttribute('aria-label', 'Resumo que será compartilhado com o especialista');
+    summary.setAttribute(
+      'aria-label',
+      'Resumo que será compartilhado com o especialista',
+    );
     const resizeSummary = () => {
       summary.style.height = 'auto';
       summary.style.height = `${Math.min(summary.scrollHeight, 360)}px`;
@@ -189,7 +267,8 @@ const suggestions = [
     const consent = document.createElement('input');
     consent.type = 'checkbox';
     const consentText = document.createElement('span');
-    consentText.textContent = 'Autorizo compartilhar este resumo com um especialista da Luminar pelo WhatsApp.';
+    consentText.textContent =
+      'Autorizo compartilhar este resumo com um especialista da Luminar pelo WhatsApp.';
     consentLabel.append(consent, consentText);
 
     const link = document.createElement('a');
@@ -218,19 +297,39 @@ const suggestions = [
     const fields = new Map<string, string>();
     const complementary: string[] = [];
     const transcript = messages.slice(1);
-    const allUserContent = transcript.filter((message) => message.role === 'user').map((message) => message.content).join(' ');
+    const allUserContent = transcript
+      .filter((message) => message.role === 'user')
+      .map((message) => message.content)
+      .join(' ');
 
     function labelForQuestion(question: string): string | null {
       const normalized = question.toLocaleLowerCase('pt-BR');
-      if (/quantos? anos|qual (?:é )?a sua idade|sua idade/.test(normalized)) return 'Idade';
-      if (/quem (?:você )?(?:quer|gostaria).*incluir|beneficiári|dependente|incluir no plano/.test(normalized)) return 'Pessoas a incluir';
-      if (/possui.*plano|tem.*plano|plano atualmente|plano atual/.test(normalized)) return 'Plano atual';
-      if (/cidade|estado|onde (?:você )?mora|localiza/.test(normalized)) return 'Localização';
+      if (/quantos? anos|qual (?:é )?a sua idade|sua idade/.test(normalized))
+        return 'Idade';
+      if (
+        /quem (?:você )?(?:quer|gostaria).*incluir|beneficiári|dependente|incluir no plano/.test(
+          normalized,
+        )
+      )
+        return 'Pessoas a incluir';
+      if (
+        /possui.*plano|tem.*plano|plano atualmente|plano atual/.test(normalized)
+      )
+        return 'Plano atual';
+      if (/cidade|estado|onde (?:você )?mora|localiza/.test(normalized))
+        return 'Localização';
       if (/pessoa física|empresa|empresarial/.test(normalized)) return 'Perfil';
       if (/colaborador|funcionário/.test(normalized)) return 'Colaboradores';
-      if (/urgên|quando (?:você )?(?:precisa|gostaria)|prazo/.test(normalized)) return 'Urgência';
-      if (/objetivo|o que (?:você )?(?:busca|espera)|mais importante/.test(normalized)) return 'Objetivo';
-      if (/seguro|proteção|plano de saúde|benefício/.test(normalized)) return 'Interesse';
+      if (/urgên|quando (?:você )?(?:precisa|gostaria)|prazo/.test(normalized))
+        return 'Urgência';
+      if (
+        /objetivo|o que (?:você )?(?:busca|espera)|mais importante/.test(
+          normalized,
+        )
+      )
+        return 'Objetivo';
+      if (/seguro|proteção|plano de saúde|benefício/.test(normalized))
+        return 'Interesse';
       return null;
     }
 
@@ -238,13 +337,21 @@ const suggestions = [
       const message = transcript[index];
       if (message.role !== 'user') continue;
       const previous = transcript[index - 1];
-      const label = previous?.role === 'assistant' ? labelForQuestion(previous.content) : null;
+      const label =
+        previous?.role === 'assistant'
+          ? labelForQuestion(previous.content)
+          : null;
       if (label) fields.set(label, message.content);
       else complementary.push(message.content);
     }
 
     if (!fields.has('Perfil')) {
-      fields.set('Perfil', /empresa|colaborador|funcionário|cnpj/i.test(allUserContent) ? 'Empresa' : 'Pessoa física');
+      fields.set(
+        'Perfil',
+        /empresa|colaborador|funcionário|cnpj/i.test(allUserContent)
+          ? 'Empresa'
+          : 'Pessoa física',
+      );
     }
     if (!fields.has('Interesse')) {
       const interest = /plano|saúde|benefici/i.test(allUserContent)
@@ -256,28 +363,38 @@ const suggestions = [
             : 'A confirmar com o especialista';
       fields.set('Interesse', interest);
     }
-    if (complementary.length) fields.set('Necessidade informada', complementary.join(' | '));
+    if (complementary.length)
+      fields.set('Necessidade informada', complementary.join(' | '));
 
-    return [...fields.entries()].map(([label, value]) => `${label}: ${value}`).join('\n');
+    return [...fields.entries()]
+      .map(([label, value]) => `${label}: ${value}`)
+      .join('\n');
   }
 
   function renderAll(): void {
     messagesElement.replaceChildren();
     let terminalState = false;
     for (const message of messages) {
-      if (message.role === 'assistant' && renderQualification(message.content)) {
+      if (
+        message.role === 'assistant' &&
+        renderQualification(message.content)
+      ) {
         terminalState = true;
         continue;
       }
       messagesElement.append(createMessage(message));
-      if (message.role === 'assistant' && message.content === HANDOFF_MESSAGE) {
+      if (
+        message.role === 'assistant' &&
+        [HANDOFF_MESSAGE, UNKNOWN_HANDOFF_MESSAGE].includes(message.content)
+      ) {
         terminalState = true;
         messagesElement.append(createHandoff(conversationContext()));
       }
     }
     chatShell.classList.toggle('chat-shell--terminal', terminalState);
     suggestionsElement.hidden = messages.length > 1;
-    const qualificationElement = messagesElement.querySelector<HTMLElement>('.qualification');
+    const qualificationElement =
+      messagesElement.querySelector<HTMLElement>('.qualification');
     messagesElement.scrollTop = qualificationElement
       ? qualificationElement.offsetTop - messagesElement.offsetTop
       : messagesElement.scrollHeight;
@@ -285,24 +402,78 @@ const suggestions = [
 
   function persist(): void {
     try {
-      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(messages.slice(-MAX_STORED_MESSAGES)));
-      if (agentState) sessionStorage.setItem(STATE_STORAGE_KEY, JSON.stringify(agentState));
-      else sessionStorage.removeItem(STATE_STORAGE_KEY);
-    } catch { /* armazenamento opcional */ }
+      const memory: PersistentMemory = {
+        version: 2,
+        updatedAt: new Date().toISOString(),
+        messages: messages.slice(-MAX_STORED_MESSAGES),
+        agentState,
+      };
+      localStorage.setItem(MEMORY_STORAGE_KEY, JSON.stringify(memory));
+    } catch {
+      /* armazenamento opcional */
+    }
+  }
+
+  function isValidMessages(value: unknown): value is Message[] {
+    return (
+      Array.isArray(value) &&
+      value.length > 0 &&
+      value.length <= MAX_STORED_MESSAGES &&
+      value.every(
+        (item) =>
+          item &&
+          typeof item === 'object' &&
+          ['user', 'assistant'].includes(String(item.role)) &&
+          typeof item.content === 'string' &&
+          item.content.length > 0 &&
+          item.content.length <= 5000,
+      )
+    );
+  }
+
+  function isValidState(value: unknown): value is AgentState | null {
+    return (
+      value === null || (typeof value === 'object' && !Array.isArray(value))
+    );
   }
 
   function restore(): void {
     try {
-      const value: unknown = JSON.parse(sessionStorage.getItem(STORAGE_KEY) ?? 'null');
-      if (Array.isArray(value) && value.length <= MAX_STORED_MESSAGES && value.every((item) => item && typeof item === 'object' && ['user', 'assistant'].includes(String(item.role)) && typeof item.content === 'string' && item.content.length <= 5000)) {
-        messages = value as Message[];
+      const storedMemory: unknown = JSON.parse(
+        localStorage.getItem(MEMORY_STORAGE_KEY) ?? 'null',
+      );
+      if (
+        storedMemory &&
+        typeof storedMemory === 'object' &&
+        !Array.isArray(storedMemory)
+      ) {
+        const memory = storedMemory as Partial<PersistentMemory>;
+        if (
+          memory.version === 2 &&
+          isValidMessages(memory.messages) &&
+          isValidState(memory.agentState)
+        ) {
+          messages = memory.messages;
+          agentState = memory.agentState;
+        }
+      } else {
+        const legacyMessages: unknown = JSON.parse(
+          sessionStorage.getItem(LEGACY_MESSAGES_KEY) ?? 'null',
+        );
+        const legacyState: unknown = JSON.parse(
+          sessionStorage.getItem(LEGACY_STATE_KEY) ?? 'null',
+        );
+        if (isValidMessages(legacyMessages)) {
+          messages = legacyMessages;
+          agentState = isValidState(legacyState) ? legacyState : null;
+          persist();
+        }
       }
-      const storedState: unknown = JSON.parse(sessionStorage.getItem(STATE_STORAGE_KEY) ?? 'null');
-      if (storedState && typeof storedState === 'object' && !Array.isArray(storedState)) agentState = storedState as AgentState;
     } catch {
-      sessionStorage.removeItem(STORAGE_KEY);
-      sessionStorage.removeItem(STATE_STORAGE_KEY);
+      localStorage.removeItem(MEMORY_STORAGE_KEY);
     }
+    sessionStorage.removeItem(LEGACY_MESSAGES_KEY);
+    sessionStorage.removeItem(LEGACY_STATE_KEY);
     renderAll();
   }
 
@@ -332,14 +503,34 @@ const suggestions = [
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: messages.slice(-RECENT_MESSAGES_LIMIT), state: agentState }),
+        body: JSON.stringify({
+          messages: messages.slice(-RECENT_MESSAGES_LIMIT),
+          state: agentState,
+        }),
       });
       const data: unknown = await response.json();
-      if (!response.ok || !data || typeof data !== 'object' || !('message' in data) || typeof data.message !== 'string') {
-        const friendly = data && typeof data === 'object' && 'error' in data && typeof data.error === 'string' ? data.error : 'Não foi possível obter uma resposta agora.';
+      if (
+        !response.ok ||
+        !data ||
+        typeof data !== 'object' ||
+        !('message' in data) ||
+        typeof data.message !== 'string'
+      ) {
+        const friendly =
+          data &&
+          typeof data === 'object' &&
+          'error' in data &&
+          typeof data.error === 'string'
+            ? data.error
+            : 'Não foi possível obter uma resposta agora.';
         throw new Error(friendly);
       }
-      if ('state' in data && data.state && typeof data.state === 'object' && !Array.isArray(data.state)) {
+      if (
+        'state' in data &&
+        data.state &&
+        typeof data.state === 'object' &&
+        !Array.isArray(data.state)
+      ) {
         agentState = data.state as AgentState;
       }
       messages.push({ role: 'assistant', content: data.message });
@@ -366,21 +557,27 @@ const suggestions = [
     void send(content);
   });
   input.addEventListener('keydown', (event) => {
-    if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); form.requestSubmit(); }
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      form.requestSubmit();
+    }
   });
   input.addEventListener('input', () => {
     input.style.height = 'auto';
     input.style.height = `${Math.min(input.scrollHeight, 120)}px`;
   });
   suggestionsElement.addEventListener('click', (event) => {
-    const button = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-suggestion]');
+    const button = (event.target as HTMLElement).closest<HTMLButtonElement>(
+      '[data-suggestion]',
+    );
     if (button?.dataset.suggestion) void send(button.dataset.suggestion);
   });
   resetButton.addEventListener('click', () => {
     messages = [{ role: 'assistant', content: INITIAL_MESSAGE }];
     agentState = null;
-    sessionStorage.removeItem(STORAGE_KEY);
-    sessionStorage.removeItem(STATE_STORAGE_KEY);
+    localStorage.removeItem(MEMORY_STORAGE_KEY);
+    sessionStorage.removeItem(LEGACY_MESSAGES_KEY);
+    sessionStorage.removeItem(LEGACY_STATE_KEY);
     renderAll();
     input.focus();
   });
