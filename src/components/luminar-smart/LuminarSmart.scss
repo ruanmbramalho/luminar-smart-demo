@@ -579,3 +579,22 @@
     min-height: 0;
   }
 }
+@media (max-width: 700px) {
+  .chat-shell--focused {
+    scroll-margin-top: calc(66px + env(safe-area-inset-top));
+
+    .messages {
+      height: clamp(
+        160px,
+        calc(var(--visual-viewport-height, 500px) - 190px),
+        260px
+      );
+      transition: height 0.18s ease;
+    }
+
+    .suggestions,
+    .privacy-note {
+      display: none;
+    }
+  }
+}
