@@ -556,25 +556,45 @@ const suggestions = [
     }
   }
 
-  function updateVisualViewportHeight(): void {
-    const viewportHeight = window.visualViewport?.height ?? window.innerHeight;
+  let pageScrollBeforeFocus = 0;
+
+  function updateMobileChatViewport(): void {
+    const viewport = window.visualViewport;
+    const viewportHeight = viewport?.height ?? window.innerHeight;
+    const viewportTop = viewport?.offsetTop ?? 0;
     document.documentElement.style.setProperty(
       '--visual-viewport-height',
       `${viewportHeight}px`,
+    );
+    if (!chatShell.classList.contains('chat-shell--focused')) return;
+    chatShell.style.setProperty('--focused-chat-top', `${viewportTop + 8}px`);
+    chatShell.style.setProperty(
+      '--focused-chat-height',
+      `${Math.max(280, viewportHeight - 16)}px`,
     );
   }
 
   function activateMobileChatFocus(): void {
     if (!window.matchMedia('(max-width: 700px)').matches) return;
-    chatShell.classList.add('chat-shell--focused');
-    updateVisualViewportHeight();
+    if (!chatShell.classList.contains('chat-shell--focused')) {
+      pageScrollBeforeFocus = window.scrollY;
+      document.body.style.top = `-${pageScrollBeforeFocus}px`;
+      document.body.classList.add('mobile-chat-active');
+      chatShell.classList.add('chat-shell--focused');
+    }
+    updateMobileChatViewport();
+    messagesElement.scrollTop = messagesElement.scrollHeight;
   }
 
   function releaseMobileChatFocus(): void {
     window.setTimeout(() => {
-      if (!form.contains(document.activeElement)) {
-        chatShell.classList.remove('chat-shell--focused');
-      }
+      if (form.contains(document.activeElement)) return;
+      chatShell.classList.remove('chat-shell--focused');
+      chatShell.style.removeProperty('--focused-chat-top');
+      chatShell.style.removeProperty('--focused-chat-height');
+      document.body.classList.remove('mobile-chat-active');
+      document.body.style.removeProperty('top');
+      window.scrollTo({ top: pageScrollBeforeFocus, behavior: 'auto' });
     }, 120);
   }
 
@@ -587,7 +607,8 @@ const suggestions = [
 
   window.addEventListener('online', updateConnectionState);
   window.addEventListener('offline', updateConnectionState);
-  window.visualViewport?.addEventListener('resize', updateVisualViewportHeight);
+  window.visualViewport?.addEventListener('resize', updateMobileChatViewport);
+  window.visualViewport?.addEventListener('scroll', updateMobileChatViewport);
   input.addEventListener('pointerdown', activateMobileChatFocus, {
     passive: true,
   });
@@ -634,5 +655,5 @@ const suggestions = [
   });
   restore();
   updateConnectionState();
-  updateVisualViewportHeight();
+  updateMobileChatViewport();
 </script>
