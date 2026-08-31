@@ -43,7 +43,7 @@ import '../styles/page.scss';
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M12 3v12m0 0 4-4m-4 4-4-4M5 17v3h14v-3"></path>
             </svg>
-            Instalar app
+            <span id="install-label">Instalar app</span>
           </button>
           <span class="concept-badge"><i></i> Protótipo conceitual</span>
         </div>
@@ -87,15 +87,73 @@ import '../styles/page.scss';
       </p>
       <span>© 2026 Luminar Gold</span>
     </footer>
+    <dialog
+      class="ios-install-dialog"
+      id="ios-install-dialog"
+      aria-labelledby="ios-install-title"
+    >
+      <button
+        class="ios-install-dialog__close"
+        id="close-ios-install"
+        type="button"
+        aria-label="Fechar">×</button
+      >
+      <div class="ios-install-dialog__mark" aria-hidden="true">L</div>
+      <div>
+        <span class="ios-install-dialog__eyebrow">Instalar Luminar Smart</span>
+        <h2 id="ios-install-title">Adicionar à Tela de Início</h2>
+        <p
+          class="ios-install-dialog__browser-note"
+          id="ios-browser-note"
+          hidden
+        >
+          No iPhone, abra este endereço no Safari para instalar o aplicativo.
+        </p>
+        <ol>
+          <li>Toque no botão <strong>Compartilhar</strong> do navegador.</li>
+          <li>
+            Role o menu e escolha <strong>Adicionar à Tela de Início</strong>.
+          </li>
+          <li>Confirme tocando em <strong>Adicionar</strong>.</li>
+        </ol>
+      </div>
+    </dialog>
     <script>
       interface InstallPromptEvent extends Event {
         prompt(): Promise<void>;
         userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
       }
 
+      type NavigatorWithStandalone = Navigator & { standalone?: boolean };
+
       const installButton =
         document.querySelector<HTMLButtonElement>('#install-app');
+      const installLabel =
+        document.querySelector<HTMLElement>('#install-label');
+      const iosInstallDialog = document.querySelector<HTMLDialogElement>(
+        '#ios-install-dialog',
+      );
+      const iosBrowserNote =
+        document.querySelector<HTMLElement>('#ios-browser-note');
+      const closeIosInstall =
+        document.querySelector<HTMLButtonElement>('#close-ios-install');
+      const isIos =
+        /iPad|iPhone|iPod/i.test(navigator.userAgent) ||
+        (/Macintosh/i.test(navigator.userAgent) &&
+          navigator.maxTouchPoints > 1);
+      const isSafari =
+        /Safari/i.test(navigator.userAgent) &&
+        !/CriOS|FxiOS|EdgiOS|OPiOS/i.test(navigator.userAgent);
+      const isStandalone =
+        window.matchMedia('(display-mode: standalone)').matches ||
+        Boolean((navigator as NavigatorWithStandalone).standalone);
       let installPrompt: InstallPromptEvent | null = null;
+
+      if (isIos && !isStandalone) {
+        installButton?.removeAttribute('hidden');
+        if (installLabel) installLabel.textContent = 'Adicionar à tela';
+        if (iosBrowserNote) iosBrowserNote.hidden = isSafari;
+      }
 
       window.addEventListener('beforeinstallprompt', (event) => {
         event.preventDefault();
@@ -104,11 +162,21 @@ import '../styles/page.scss';
       });
 
       installButton?.addEventListener('click', async () => {
-        if (!installPrompt) return;
-        await installPrompt.prompt();
-        await installPrompt.userChoice;
-        installPrompt = null;
-        installButton.hidden = true;
+        if (installPrompt) {
+          await installPrompt.prompt();
+          await installPrompt.userChoice;
+          installPrompt = null;
+          installButton.hidden = true;
+          return;
+        }
+        if (isIos && !isStandalone) iosInstallDialog?.showModal();
+      });
+
+      closeIosInstall?.addEventListener('click', () =>
+        iosInstallDialog?.close(),
+      );
+      iosInstallDialog?.addEventListener('click', (event) => {
+        if (event.target === iosInstallDialog) iosInstallDialog.close();
       });
 
       window.addEventListener('appinstalled', () => {
