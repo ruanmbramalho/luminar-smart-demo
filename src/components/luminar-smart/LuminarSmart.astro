@@ -12,13 +12,25 @@ const suggestions = [
 
 <section class="chat-shell" aria-labelledby="chat-title">
   <header class="chat-header">
-    <div class="agent-identity">
-      <span class="agent-orb" aria-hidden="true"><i></i></span>
-      <div>
-        <h2 id="chat-title">Luminar Smart</h2>
-        <p id="agent-status" role="status">
-          <span></span> Assistente disponível
-        </p>
+    <div class="chat-header__main">
+      <button
+        class="mobile-chat-back"
+        id="close-mobile-chat"
+        type="button"
+        aria-label="Voltar para a página"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true"
+          ><path d="m15 18-6-6 6-6"></path></svg
+        >
+      </button>
+      <div class="agent-identity">
+        <span class="agent-orb" aria-hidden="true"><i></i></span>
+        <div>
+          <h2 id="chat-title">Luminar Smart</h2>
+          <p id="agent-status" role="status">
+            <span></span> Assistente disponível
+          </p>
+        </div>
       </div>
     </div>
     <button
@@ -113,6 +125,8 @@ const suggestions = [
   const suggestionsElement =
     document.querySelector<HTMLDivElement>('#suggestions')!;
   const resetButton = document.querySelector<HTMLButtonElement>('#reset-chat')!;
+  const mobileChatBack =
+    document.querySelector<HTMLButtonElement>('#close-mobile-chat')!;
   const statusElement = document.querySelector<HTMLElement>('#agent-status')!;
   let messages: Message[] = [{ role: 'assistant', content: INITIAL_MESSAGE }];
   let agentState: AgentState | null = null;
@@ -556,46 +570,44 @@ const suggestions = [
     }
   }
 
-  let pageScrollBeforeFocus = 0;
+  let pageScrollBeforeMobileChat = 0;
+  let mobileChatHistoryActive = false;
 
   function updateMobileChatViewport(): void {
     const viewport = window.visualViewport;
     const viewportHeight = viewport?.height ?? window.innerHeight;
     const viewportTop = viewport?.offsetTop ?? 0;
-    document.documentElement.style.setProperty(
-      '--visual-viewport-height',
-      `${viewportHeight}px`,
-    );
-    if (!chatShell.classList.contains('chat-shell--focused')) return;
-    chatShell.style.setProperty('--focused-chat-top', `${viewportTop + 8}px`);
+    if (!chatShell.classList.contains('chat-shell--mobile-active')) return;
+    chatShell.style.setProperty('--mobile-chat-top', `${viewportTop}px`);
     chatShell.style.setProperty(
-      '--focused-chat-height',
-      `${Math.max(280, viewportHeight - 16)}px`,
+      '--mobile-chat-height',
+      `${Math.max(280, viewportHeight)}px`,
     );
   }
 
-  function activateMobileChatFocus(): void {
+  function openMobileChat(): void {
     if (!window.matchMedia('(max-width: 700px)').matches) return;
-    if (!chatShell.classList.contains('chat-shell--focused')) {
-      pageScrollBeforeFocus = window.scrollY;
-      document.body.style.top = `-${pageScrollBeforeFocus}px`;
+    if (!chatShell.classList.contains('chat-shell--mobile-active')) {
+      pageScrollBeforeMobileChat = window.scrollY;
+      document.body.style.top = `-${pageScrollBeforeMobileChat}px`;
       document.body.classList.add('mobile-chat-active');
-      chatShell.classList.add('chat-shell--focused');
+      chatShell.classList.add('chat-shell--mobile-active');
+      history.pushState({ luminarMobileChat: true }, '');
+      mobileChatHistoryActive = true;
     }
     updateMobileChatViewport();
     messagesElement.scrollTop = messagesElement.scrollHeight;
   }
 
-  function releaseMobileChatFocus(): void {
-    window.setTimeout(() => {
-      if (form.contains(document.activeElement)) return;
-      chatShell.classList.remove('chat-shell--focused');
-      chatShell.style.removeProperty('--focused-chat-top');
-      chatShell.style.removeProperty('--focused-chat-height');
-      document.body.classList.remove('mobile-chat-active');
-      document.body.style.removeProperty('top');
-      window.scrollTo({ top: pageScrollBeforeFocus, behavior: 'auto' });
-    }, 120);
+  function closeMobileChat(): void {
+    if (!chatShell.classList.contains('chat-shell--mobile-active')) return;
+    input.blur();
+    chatShell.classList.remove('chat-shell--mobile-active');
+    chatShell.style.removeProperty('--mobile-chat-top');
+    chatShell.style.removeProperty('--mobile-chat-height');
+    document.body.classList.remove('mobile-chat-active');
+    document.body.style.removeProperty('top');
+    window.scrollTo({ top: pageScrollBeforeMobileChat, behavior: 'auto' });
   }
 
   function updateConnectionState(): void {
@@ -609,11 +621,18 @@ const suggestions = [
   window.addEventListener('offline', updateConnectionState);
   window.visualViewport?.addEventListener('resize', updateMobileChatViewport);
   window.visualViewport?.addEventListener('scroll', updateMobileChatViewport);
-  input.addEventListener('pointerdown', activateMobileChatFocus, {
-    passive: true,
+  input.addEventListener('pointerdown', openMobileChat, { passive: true });
+  form.addEventListener('focusin', openMobileChat);
+
+  mobileChatBack.addEventListener('click', () => {
+    if (mobileChatHistoryActive) history.back();
+    else closeMobileChat();
   });
-  form.addEventListener('focusin', activateMobileChatFocus);
-  form.addEventListener('focusout', releaseMobileChatFocus);
+  window.addEventListener('popstate', () => {
+    if (!chatShell.classList.contains('chat-shell--mobile-active')) return;
+    mobileChatHistoryActive = false;
+    closeMobileChat();
+  });
 
   submitButton.addEventListener('pointerdown', (event) => {
     if (document.activeElement !== input) return;
@@ -642,7 +661,10 @@ const suggestions = [
     const button = (event.target as HTMLElement).closest<HTMLButtonElement>(
       '[data-suggestion]',
     );
-    if (button?.dataset.suggestion) void send(button.dataset.suggestion);
+    if (button?.dataset.suggestion) {
+      openMobileChat();
+      void send(button.dataset.suggestion);
+    }
   });
   resetButton.addEventListener('click', () => {
     messages = [{ role: 'assistant', content: INITIAL_MESSAGE }];
