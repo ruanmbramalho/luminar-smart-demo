@@ -16,7 +16,9 @@ const suggestions = [
       <span class="agent-orb" aria-hidden="true"><i></i></span>
       <div>
         <h2 id="chat-title">Luminar Smart</h2>
-        <p><span></span> Assistente disponível</p>
+        <p id="agent-status" role="status">
+          <span></span> Assistente disponível
+        </p>
       </div>
     </div>
     <button
@@ -52,6 +54,12 @@ const suggestions = [
     </div>
   </div>
 
+  <p class="privacy-note">
+    <svg viewBox="0 0 24 24" aria-hidden="true"
+      ><path d="M7 10V7a5 5 0 0 1 10 0v3M5 10h14v10H5z"></path></svg
+    > Não informe dados pessoais ou sensíveis nesta demonstração.
+  </p>
+
   <form class="composer" id="chat-form">
     <label class="sr-only" for="chat-input">Digite sua mensagem</label>
     <textarea
@@ -68,11 +76,7 @@ const suggestions = [
       >
     </button>
   </form>
-  <p class="privacy-note">
-    <svg viewBox="0 0 24 24" aria-hidden="true"
-      ><path d="M7 10V7a5 5 0 0 1 10 0v3M5 10h14v10H5z"></path></svg
-    > Não informe dados pessoais ou sensíveis nesta demonstração.
-  </p>
+
   <QualificationCard />
 </section>
 
@@ -106,6 +110,7 @@ const suggestions = [
   const suggestionsElement =
     document.querySelector<HTMLDivElement>('#suggestions')!;
   const resetButton = document.querySelector<HTMLButtonElement>('#reset-chat')!;
+  const statusElement = document.querySelector<HTMLElement>('#agent-status')!;
   let messages: Message[] = [{ role: 'assistant', content: INITIAL_MESSAGE }];
   let agentState: AgentState | null = null;
   let loading = false;
@@ -479,7 +484,9 @@ const suggestions = [
 
   function setLoading(value: boolean): void {
     loading = value;
-    form.querySelector('button')!.toggleAttribute('disabled', value);
+    form
+      .querySelector('button')!
+      .toggleAttribute('disabled', value || !navigator.onLine);
     input.toggleAttribute('disabled', value);
     messagesElement.setAttribute('aria-busy', String(value));
     messagesElement.querySelector('.typing')?.remove();
@@ -549,6 +556,18 @@ const suggestions = [
     }
   }
 
+  function updateConnectionState(): void {
+    const online = navigator.onLine;
+    chatShell.classList.toggle('chat-shell--offline', !online);
+    statusElement.innerHTML = `<span></span> ${online ? 'Assistente disponível' : 'Sem conexão'}`;
+    form
+      .querySelector('button')!
+      .toggleAttribute('disabled', loading || !online);
+  }
+
+  window.addEventListener('online', updateConnectionState);
+  window.addEventListener('offline', updateConnectionState);
+
   form.addEventListener('submit', (event) => {
     event.preventDefault();
     const content = input.value;
@@ -582,4 +601,5 @@ const suggestions = [
     input.focus();
   });
   restore();
+  updateConnectionState();
 </script>

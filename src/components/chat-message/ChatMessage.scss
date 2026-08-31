@@ -74,3 +74,22 @@
     font-size: 12px;
   }
 }
+
+@media (max-width: 700px) {
+  .message {
+    gap: 9px;
+    margin-bottom: 16px;
+
+    p {
+      max-width: calc(100% - 34px);
+      padding: 12px 14px;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    &__mark {
+      width: 26px;
+      height: 26px;
+    }
+  }
+}

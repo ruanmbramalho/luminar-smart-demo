@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#080a0c" />
+    <title>Você está offline | Luminar Smart</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        min-height: 100dvh;
+        margin: 0;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+        color: #f2f0ea;
+        background: radial-gradient(circle at 50% 0, #242016, #080a0c 48%);
+        font-family: system-ui, sans-serif;
+      }
+      main {
+        width: min(100%, 420px);
+        padding: 32px;
+        border: 1px solid rgba(201, 164, 94, 0.24);
+        border-radius: 24px;
+        background: rgba(16, 19, 22, 0.96);
+        box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+        text-align: center;
+      }
+      .mark {
+        width: 54px;
+        height: 54px;
+        margin: 0 auto 24px;
+        display: grid;
+        place-items: center;
+        border: 1px solid #c9a45e;
+        border-radius: 50%;
+        color: #e3c98e;
+        font:
+          italic 24px Georgia,
+          serif;
+      }
+      h1 {
+        margin: 0 0 12px;
+        font-size: 26px;
+      }
+      p {
+        margin: 0 0 24px;
+        color: #a5a8a8;
+        line-height: 1.6;
+      }
+      button {
+        min-height: 48px;
+        width: 100%;
+        border: 0;
+        border-radius: 12px;
+        color: #111;
+        background: linear-gradient(135deg, #d5b775, #a98646);
+        font:
+          600 15px system-ui,
+          sans-serif;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="mark" aria-hidden="true">L</div>
+      <h1>Você está offline</h1>
+      <p>
+        O atendimento inteligente precisa de conexão. Sua conversa permanece
+        salva neste dispositivo.
+      </p>
+      <button type="button" onclick="location.reload()">
+        Tentar novamente
+      </button>
+    </main>
+  </body>
+</html>

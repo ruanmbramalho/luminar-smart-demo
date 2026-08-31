@@ -8,12 +8,25 @@ import '../styles/page.scss';
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
     <meta
       name="description"
       content="Luminar Smart — uma demonstração de atendimento inteligente para seguros e benefícios."
     />
     <meta name="theme-color" content="#080a0c" />
+    <meta name="application-name" content="Luminar Smart" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="apple-mobile-web-app-title" content="Luminar" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" href="/icons/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/icons/icon-192.png" />
     <title>Luminar Smart | Atendimento inteligente</title>
   </head>
   <body>
@@ -25,7 +38,15 @@ import '../styles/page.scss';
           <span class="brand-symbol" aria-hidden="true"><i></i></span>
           <span><strong>Luminar</strong><small>Gold</small></span>
         </a>
-        <span class="concept-badge"><i></i> Protótipo conceitual</span>
+        <div class="topbar-actions">
+          <button class="install-button" id="install-app" type="button" hidden>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 3v12m0 0 4-4m-4 4-4-4M5 17v3h14v-3"></path>
+            </svg>
+            Instalar app
+          </button>
+          <span class="concept-badge"><i></i> Protótipo conceitual</span>
+        </div>
       </nav>
 
       <section class="hero">
@@ -37,7 +58,7 @@ import '../styles/page.scss';
         </p>
       </section>
 
-      <LuminarSmart />
+      <div id="atendimento"><LuminarSmart /></div>
 
       <section class="value-strip" aria-label="Benefícios">
         <div>
@@ -66,5 +87,40 @@ import '../styles/page.scss';
       </p>
       <span>© 2026 Luminar Gold</span>
     </footer>
+    <script>
+      interface InstallPromptEvent extends Event {
+        prompt(): Promise<void>;
+        userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
+      }
+
+      const installButton =
+        document.querySelector<HTMLButtonElement>('#install-app');
+      let installPrompt: InstallPromptEvent | null = null;
+
+      window.addEventListener('beforeinstallprompt', (event) => {
+        event.preventDefault();
+        installPrompt = event as InstallPromptEvent;
+        installButton?.removeAttribute('hidden');
+      });
+
+      installButton?.addEventListener('click', async () => {
+        if (!installPrompt) return;
+        await installPrompt.prompt();
+        await installPrompt.userChoice;
+        installPrompt = null;
+        installButton.hidden = true;
+      });
+
+      window.addEventListener('appinstalled', () => {
+        installPrompt = null;
+        if (installButton) installButton.hidden = true;
+      });
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          void navigator.serviceWorker.register('/sw.js');
+        });
+      }
+    </script>
   </body>
 </html>

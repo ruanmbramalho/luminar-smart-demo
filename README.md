@@ -20,6 +20,7 @@ The result is a concise commercial analysis that visitors can review, edit, and 
 - Graceful human handoff when the AI provider is unavailable
 - Persistent conversation memory across browser restarts
 - Responsive and accessible desktop/mobile interface
+- Installable PWA with offline shell and locally preserved conversation
 - Premium visual direction tailored to the insurance market
 
 ## How it works
@@ -90,6 +91,12 @@ LLM_MODEL=gpt-5-mini
 ```
 
 Open [http://localhost:4321](http://localhost:4321).
+
+### Install as an app
+
+On supported browsers, use the **Install app** action in the header. On iOS, use the browser share menu and choose **Add to Home Screen**. Installation requires HTTPS in production (localhost is accepted during development).
+
+The PWA caches only the application shell and static assets. Conversation memory remains local to the device, while AI requests are never cached and still require an internet connection.
 
 ## Validation and production build
 

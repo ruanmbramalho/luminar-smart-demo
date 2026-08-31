@@ -83,3 +83,11 @@ Sugestão:
 - sem excesso de efeitos;
 - foco total no chat;
 - contraste e acessibilidade adequados.
+
+## PWA e experiência móvel
+
+- Manifesto instalável com ícones de 192 px e 512 px.
+- Service worker limitado ao shell e aos assets estáticos; nunca armazenar respostas de `/api/` em cache.
+- A interface offline pode restaurar a memória local, mas deve bloquear novos envios até a conexão retornar.
+- Respeitar safe areas, teclado virtual, alvos de toque de pelo menos 44 px e modo `standalone`.
+- Manter instalação como aprimoramento progressivo: a experiência web continua funcional quando o navegador não oferece o prompt.

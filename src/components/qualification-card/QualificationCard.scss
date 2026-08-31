@@ -105,3 +105,36 @@
     grid-template-columns: 1fr;
   }
 }
+
+@media (max-width: 700px) {
+  .qualification {
+    border-radius: 15px;
+
+    &__header {
+      top: -20px;
+      padding: 15px;
+    }
+
+    &__grid {
+      padding-inline: 14px;
+
+      div {
+        padding: 11px 6px;
+      }
+
+      dd {
+        font-size: 13px;
+        line-height: 1.45;
+      }
+    }
+
+    &__summary {
+      margin-inline: 14px;
+      padding: 13px;
+
+      p {
+        font-size: 13px;
+      }
+    }
+  }
+}
